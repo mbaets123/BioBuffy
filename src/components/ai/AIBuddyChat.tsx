@@ -31,6 +31,7 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const [pendingFresh, setPendingFresh] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -202,20 +203,41 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
     abortRef.current?.abort();
     setIsLoading(false);
     setMessages([]);
+    setConfirmClear(false);
     localStorage.removeItem(storageKey);
   }
 
   return (
     <div className="flex flex-col overflow-hidden" style={{ height: "100%" }}>
-      {/* Wis gesprek knop */}
+      {/* Wis gesprek knop — met bevestiging zodat één misklik niet alles wist */}
       {messages.length > 0 && (
-        <div className="flex justify-end px-3 pt-2">
-          <button
-            onClick={handleClearChat}
-            className="text-[10px] font-medium text-muted-foreground hover:text-red-500 transition-colors"
-          >
-            🗑️ Wis gesprek
-          </button>
+        <div className="flex items-center justify-end gap-2 px-3 pt-2">
+          {confirmClear ? (
+            <>
+              <span className="text-xs text-amber-700 dark:text-amber-400">
+                Weet je het zeker?
+              </span>
+              <button
+                onClick={handleClearChat}
+                className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-red-600"
+              >
+                Ja, wis alles
+              </button>
+              <button
+                onClick={() => setConfirmClear(false)}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Nee, bewaar
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setConfirmClear(true)}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-red-500"
+            >
+              🗑️ Wis gesprek
+            </button>
+          )}
         </div>
       )}
       {/* Messages */}
@@ -343,7 +365,7 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
                 setTooltip({ text: item.tooltip, x: rect.left + rect.width / 2, y: rect.top });
               }}
               onMouseLeave={() => setTooltip(null)}
-              className="inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-xs font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
             >
               <span>{item.emoji}</span>
               <span className={item.color}>{item.label}</span>
@@ -380,17 +402,17 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
           {isLoading ? (
             <Button
               onClick={handleRefresh}
-              size="sm"
-              className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-3"
+              aria-label="Stop het antwoord"
+              className="shrink-0 min-h-[44px] bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-4"
             >
-              ↻
+              ⏹ Stop
             </Button>
           ) : (
             <Button
               onClick={() => handleSend()}
               disabled={!input.trim()}
-              size="sm"
-              className="shrink-0 bg-gres-blue hover:bg-gres-blue-light text-white rounded-xl px-3"
+              aria-label="Verstuur je vraag"
+              className="shrink-0 min-h-[44px] bg-gres-blue hover:bg-gres-blue-light text-white rounded-xl px-4"
             >
               ➤
             </Button>
