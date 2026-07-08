@@ -251,6 +251,17 @@ export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }:
       {/* Questions with fade-in animation */}
       {filteredQuestions.length > 0 && !aiOpen && (
         <div key={activeLevel} className="space-y-4 animate-fade-in">
+          {/* Uitleg van het gekozen niveau — ook zichtbaar op touch-apparaten */}
+          {(() => {
+            const active = DIFFICULTY_LABELS.find((d) => d.level === activeLevel);
+            return active ? (
+              <p className="rounded-xl bg-gres-blue/5 border border-gres-blue/10 px-4 py-2.5 text-sm text-foreground/70">
+                <span className="mr-1 text-xs text-gres-yellow">{"★".repeat(active.level)}</span>
+                <span className="font-semibold text-gres-blue">{active.label}:</span>{" "}
+                {active.desc}
+              </p>
+            ) : null;
+          })()}
           {filteredQuestions.map((q, i) => (
             <QuestionCard key={q.id} question={q} index={i} onAnswered={handleAnswered} />
           ))}

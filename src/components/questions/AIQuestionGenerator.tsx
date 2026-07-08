@@ -39,10 +39,10 @@ const BUFFEL_INTROS = [
 ];
 
 const LEVEL_INFO = [
-  { level: 1, label: "Reproductie", emoji: "★" },
+  { level: 1, label: "Basis", emoji: "★" },
   { level: 2, label: "Toepassen", emoji: "★★" },
-  { level: 3, label: "Nieuwe situaties", emoji: "★★★" },
-  { level: 4, label: "Inzicht", emoji: "★★★★" },
+  { level: 3, label: "Uitdaging", emoji: "★★★" },
+  { level: 4, label: "Expert", emoji: "★★★★" },
 ];
 
 const TYPE_OPTIONS: { type: QuestionType; label: string; emoji: string }[] = [

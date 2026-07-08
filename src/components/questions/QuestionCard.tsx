@@ -10,10 +10,10 @@ import { normalize, isCloseEnough } from "@/lib/text-utils";
 import type { Question } from "@/types";
 
 const DIFFICULTY_LABELS: Record<number, string> = {
-  1: "Reproductie",
+  1: "Basis",
   2: "Toepassen",
-  3: "Nieuwe situaties",
-  4: "Inzicht",
+  3: "Uitdaging",
+  4: "Expert",
 };
 
 interface QuestionCardProps {
