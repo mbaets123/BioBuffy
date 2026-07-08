@@ -9,6 +9,7 @@ import { ConceptChip } from "@/components/ui/ConceptChip";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { getParagraph } from "@/lib/data";
 import { getQuestions } from "@/lib/questions";
+import { getYouTubeId } from "@/lib/youtube";
 
 interface ParagraphPageProps {
   params: Promise<{ chapterId: string; paragraphId: string }>;
@@ -146,10 +147,10 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                   </h3>
                 </div>
                 <div className="p-4">
-                  {paragraph.videoUrl ? (
+                  {getYouTubeId(paragraph.videoUrl) ? (
                     <iframe
                       className="aspect-video w-full rounded-xl"
-                      src={`https://www.youtube.com/embed/${paragraph.videoUrl.split("v=")[1]?.split("&")[0]}`}
+                      src={`https://www.youtube.com/embed/${getYouTubeId(paragraph.videoUrl)}`}
                       title={paragraph.title}
                       loading="lazy"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -1,10 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 import { YoutubeTranscript } from "youtube-transcript";
+import { getYouTubeId } from "../src/lib/youtube";
 
-const supabase = createClient(
-  "https://nnpzxphodimipscrvvbg.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ucHp4cGhvZGltaXBzY3J2dmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTk4MjEsImV4cCI6MjA5MzgzNTgyMX0.aPEakiEWKuPFgjcKvo6fe_iPGVH71I-Z6vSbs71K5Qw"
-);
+// Draai dit script met de keys uit .env.local, bijv.:
+//   npx dotenv -e .env.local -- npx tsx scripts/fetch-transcripts.ts
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error(
+    "Ontbrekende env vars: NEXT_PUBLIC_SUPABASE_URL en SUPABASE_SERVICE_ROLE_KEY (of NEXT_PUBLIC_SUPABASE_ANON_KEY)"
+  );
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function fetchTranscripts() {
   const { data: paragraphs, error } = await supabase
@@ -21,7 +32,7 @@ async function fetchTranscripts() {
   console.log(`Found ${paragraphs.length} paragraphs with videos\n`);
 
   for (const p of paragraphs) {
-    const videoId = p.video_url.split("v=")[1]?.split("&")[0];
+    const videoId = getYouTubeId(p.video_url);
     if (!videoId) {
       console.log(`⚠️  ${p.id} ${p.title} — no valid video ID`);
       continue;
