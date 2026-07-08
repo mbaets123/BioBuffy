@@ -53,41 +53,6 @@ export const getChapters = unstable_cache(async function _getChapters(): Promise
   }));
 }, ["chapters-all"], { revalidate: 60 });
 
-/* ---------- Homepage (licht): alleen chapters + paragraph count ---------- */
-
-export async function getChaptersLight(): Promise<Chapter[]> {
-  const [chaptersRes, paragraphsRes] = await Promise.all([
-    supabaseServer.from("chapters").select("*").order("order"),
-    supabaseServer.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
-  ]);
-
-  if (chaptersRes.error) throw chaptersRes.error;
-  if (paragraphsRes.error) throw paragraphsRes.error;
-
-  return (chaptersRes.data || []).map((ch) => ({
-    id: ch.id,
-    title: ch.title,
-    description: ch.description,
-    order: ch.order,
-    icon: ch.icon,
-    paragraphs: (paragraphsRes.data || [])
-      .filter((p) => p.chapter_id === ch.id)
-      .map((p): Paragraph => ({
-        id: p.id as string,
-        chapterId: p.chapter_id as string,
-        title: p.title as string,
-        order: p.order as number,
-        videoUrl: "",
-        transcript: "",
-        infographicUrl: "",
-        slideUrl: "",
-        isExtra: (p.is_extra as boolean) || false,
-        learningGoals: [],
-        concepts: [],
-      })),
-  }));
-}
-
 /* ---------- Hoofdstuk-pagina: één hoofdstuk ---------- */
 
 export function getChapter(chapterId: string): Promise<Chapter | null> {

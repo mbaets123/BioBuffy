@@ -1,12 +1,10 @@
 import { ChapterCard } from "@/components/chapter/ChapterCard";
 import { SearchBar } from "@/components/search/SearchBar";
-import { getChapters, getChaptersLight } from "@/lib/data";
+import { getChapters } from "@/lib/data";
 
 export default async function HomePage() {
-  const [chapters, chaptersLight] = await Promise.all([
-    getChapters(),       // full data for SearchBar (concepts, goals)
-    getChaptersLight(),  // light data for ChapterCards (no transcripts)
-  ]);
+  // Eén gecachte query: bevat alles voor SearchBar én ChapterCards (geen transcripts)
+  const chapters = await getChapters();
   return (
     <>
       {/* Hero section */}
@@ -44,7 +42,7 @@ export default async function HomePage() {
           </h2>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {chaptersLight.map((chapter) => (
+          {chapters.map((chapter) => (
             <ChapterCard key={chapter.id} chapter={chapter} />
           ))}
         </div>

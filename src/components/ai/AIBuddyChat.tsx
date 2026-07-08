@@ -36,8 +36,10 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Sla berichten op in localStorage (met try/catch voor quota errors)
+  // Sla berichten op in localStorage (met try/catch voor quota errors).
+  // Niet tijdens het streamen — anders schrijven we bij elk binnenkomend woord.
   useEffect(() => {
+    if (isLoading) return;
     if (messages.length > 0) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(messages));
@@ -55,7 +57,7 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
         }
       }
     }
-  }, [messages, storageKey]);
+  }, [messages, storageKey, isLoading]);
 
   useEffect(() => {
     // Alleen naar beneden scrollen als de gebruiker al onderaan was (of nieuw bericht begint)

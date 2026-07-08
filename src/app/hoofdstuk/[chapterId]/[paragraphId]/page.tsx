@@ -16,11 +16,13 @@ interface ParagraphPageProps {
 
 export default async function ParagraphPage({ params }: ParagraphPageProps) {
   const { chapterId, paragraphId } = await params;
-  const result = await getParagraph(chapterId, paragraphId);
+  const [result, questions] = await Promise.all([
+    getParagraph(chapterId, paragraphId),
+    getQuestions(paragraphId),
+  ]);
   if (!result) return notFound();
 
   const { chapter, paragraph } = result;
-  const questions = await getQuestions(paragraphId);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">

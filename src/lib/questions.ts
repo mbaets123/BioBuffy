@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { supabaseServer } from "./supabase-server";
 import type { Question } from "@/types";
 
@@ -14,27 +15,39 @@ function mapRow(q: Record<string, unknown>): Question {
   };
 }
 
-export async function getQuestions(paragraphId: string): Promise<Question[]> {
-  const { data, error } = await supabaseServer
-    .from("questions")
-    .select("*")
-    .eq("paragraph_id", paragraphId)
-    .order("difficulty")
-    .order("id");
+export function getQuestions(paragraphId: string): Promise<Question[]> {
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabaseServer
+        .from("questions")
+        .select("*")
+        .eq("paragraph_id", paragraphId)
+        .order("difficulty")
+        .order("id");
 
-  if (error) throw error;
-  return (data || []).map(mapRow);
+      if (error) throw error;
+      return (data || []).map(mapRow);
+    },
+    ["questions", paragraphId],
+    { revalidate: 60 }
+  )();
 }
 
-export async function getChapterQuestions(paragraphIds: string[]): Promise<Question[]> {
-  if (paragraphIds.length === 0) return [];
-  const { data, error } = await supabaseServer
-    .from("questions")
-    .select("*")
-    .in("paragraph_id", paragraphIds)
-    .order("difficulty")
-    .order("id");
+export function getChapterQuestions(paragraphIds: string[]): Promise<Question[]> {
+  if (paragraphIds.length === 0) return Promise.resolve([]);
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabaseServer
+        .from("questions")
+        .select("*")
+        .in("paragraph_id", paragraphIds)
+        .order("difficulty")
+        .order("id");
 
-  if (error) throw error;
-  return (data || []).map(mapRow);
+      if (error) throw error;
+      return (data || []).map(mapRow);
+    },
+    ["chapter-questions", ...paragraphIds],
+    { revalidate: 60 }
+  )();
 }
