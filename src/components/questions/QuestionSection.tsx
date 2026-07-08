@@ -102,11 +102,37 @@ export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }:
   const [wrongIds,    setWrongIds]    = useState<Set<string>>(new Set());
   const [aiOpen, setAiOpen] = useState(false);
   const [aiCount, setAiCount] = useState(0);
+
+  // Voortgang per paragraaf bewaren, zodat een refresh niets wist
+  const progressKey = `biobuffy-progress-${paragraphId}`;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(progressKey);
+      if (saved) {
+        const p = JSON.parse(saved) as { answered?: string[]; correct?: string[]; wrong?: string[] };
+        setAnsweredIds(new Set(p.answered ?? []));
+        setCorrectIds(new Set(p.correct ?? []));
+        setWrongIds(new Set(p.wrong ?? []));
+      }
+    } catch { /* corrupte opslag negeren */ }
+  }, [progressKey]);
+
   const handleAnswered = useCallback((id: string, correct: boolean | null) => {
     setAnsweredIds((prev) => new Set(prev).add(id));
     if (correct === true)  setCorrectIds((prev) => new Set(prev).add(id));
     if (correct === false) setWrongIds((prev)   => new Set(prev).add(id));
   }, []);
+
+  useEffect(() => {
+    if (answeredIds.size === 0) return;
+    try {
+      localStorage.setItem(progressKey, JSON.stringify({
+        answered: [...answeredIds],
+        correct: [...correctIds],
+        wrong: [...wrongIds],
+      }));
+    } catch { /* opslag vol of geblokkeerd — geen ramp */ }
+  }, [progressKey, answeredIds, correctIds, wrongIds]);
 
   if (questions.length === 0) {
     return (
