@@ -14,11 +14,11 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/grescollege-logo.png"
-            alt="Grescollege"
-            width={36}
-            height={36}
-            className="rounded-lg shadow-sm"
+            src="/buffy-logo.png"
+            alt="Buffy de bizon"
+            width={40}
+            height={40}
+            className="rounded-full shadow-sm ring-2 ring-gres-yellow/40"
           />
           <div className="flex flex-col">
             <span className="font-heading text-base leading-tight text-gres-blue tracking-wide">
