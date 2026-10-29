@@ -3,7 +3,7 @@
  * Change model or parameters in one place.
  */
 
-export const AI_MODEL = "google/gemini-2.5-flash";
+export const AI_MODEL = "google/gemini-3.5-flash-lite";
 
 export const AI_SETTINGS = {
   chat: { temperature: 0.9, max_tokens: 1000 },
